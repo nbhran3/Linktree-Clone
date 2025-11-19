@@ -1,12 +1,10 @@
 import express from "express";
 import cors from "cors";
 import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import AppDataSource from "./data-source.js";
 import User from "./entity/user.js";
 
-dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -22,23 +20,6 @@ console.log("Database connected via TypeORM");
 // Generic helper function to get any repository (scales better as you add more entities)
 function getRepository(entity) {
   return AppDataSource.getRepository(entity);
-}
-
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-
-  if (token == null) {
-    return res.sendStatus(401);
-  }
-
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) {
-      return res.sendStatus(403);
-    }
-    req.user = user;
-    next();
-  });
 }
 
 app.post("/auth/register", async (req, res) => {
@@ -70,6 +51,7 @@ app.post("/auth/register", async (req, res) => {
     });
 
     const savedUser = await userRepository.save(newUser);
+    console.log("Saved user object:", savedUser);
 
     // Return user without password
     return res.status(201).json({
@@ -109,10 +91,12 @@ app.post("/auth/login", async (req, res) => {
 
     // Generate JWT token
     else {
+      console.log("User object before token sign:", user);
       const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
         expiresIn: "24h",
       });
-
+      console.log("Token signed with payload:", { id: user.id, email: user.email });
+      
       return res.json({
         message: "Login successful",
         token: token,
@@ -126,5 +110,5 @@ app.post("/auth/login", async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log("Server is running on port 3000");
+  console.log("Authentication server is running on port 3000");
 });
