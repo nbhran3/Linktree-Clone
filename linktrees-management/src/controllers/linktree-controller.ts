@@ -106,3 +106,22 @@ export const deleteLinktree = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const getLinktreeBySuffix = async (req: Request, res: Response) => {
+  try {
+    const linktreeSuffix = String(req.params.suffix);
+    const linktree = await LinktreeService.getLinktreeBySuffix(linktreeSuffix);
+    if (!linktree) {
+      return res.status(404).json({ message: "Linktree not found" });
+    }
+    const links = await LinksService.getLinksByLinktreeId(linktree.id);
+    console.log("links", links);
+    res.json({
+      linktreeSuffix: linktree.linktree_suffix,
+      links: links,
+    });
+  } catch (error) {
+    console.error("Error fetching linktree by suffix:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

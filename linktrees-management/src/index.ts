@@ -47,6 +47,8 @@ async function initializeApp() {
     linksController.updateLink
   );
 
+  app.get("/linktrees/:suffix/public", linktreeController.getLinktreeBySuffix);
+
   app.listen(PORT, () => {
     console.log(`Linktrees Management Service is running on port ${PORT}`);
   });
