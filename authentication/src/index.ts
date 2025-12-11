@@ -1,8 +1,8 @@
 import "reflect-metadata";
 import express from "express";
 import cors from "cors";
-import AppDataSource from "./data-source.js";
-import * as AuthenticationController from "./controllers/authentication-controller.js";
+import AppDataSource from "./data-source";
+import * as AuthenticationController from "./controllers/authentication-controller";
 
 const app = express();
 app.use(cors());

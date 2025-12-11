@@ -1,4 +1,4 @@
-import * as LinksRepository from "../repositories/links-repository";
+import * as LinksRepository from "../repositories/links-repository.js";
 
 export const getLinksByLinktreeId = async (linktreeId: number) => {
   return LinksRepository.getLinksByLinktreeId(linktreeId);

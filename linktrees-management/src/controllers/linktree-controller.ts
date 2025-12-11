@@ -2,8 +2,8 @@
 // Services -> The services use repositories to perform business logic
 // Repositories -> Data access layer (DAL) -> Database queries
 
-import * as LinktreeService from "../services/linktree-service";
-import * as LinksService from "../services/links-service";
+import * as LinktreeService from "../services/linktree-service.js";
+import * as LinksService from "../services/links-service.js";
 import { Request, Response } from "express";
 import validator from "validator";
 

@@ -2,7 +2,7 @@
 // Services -> The services use repositories to perform business logic
 // Repositories -> Data access layer (DAL) -> Database queries
 
-import * as AuthenticationService from "../services/authentication-service.js";
+import * as AuthenticationService from "../services/authentication-service";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Request, Response } from "express";

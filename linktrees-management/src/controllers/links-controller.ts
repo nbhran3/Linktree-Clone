@@ -1,5 +1,5 @@
-import * as LinksService from "../services/links-service";
-import * as LinktreeService from "../services/linktree-service";
+import * as LinksService from "../services/links-service.js";
+import * as LinktreeService from "../services/linktree-service.js";
 import { Request, Response } from "express";
 
 export const createLink = async (req: Request, res: Response) => {

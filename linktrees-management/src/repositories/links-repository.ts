@@ -1,5 +1,5 @@
-import AppDataSource from "../data-source";
-import { Links } from "../entity/links";
+import AppDataSource from "../data-source.js";
+import { Links } from "../entity/links.js";
 
 const linksRepository = AppDataSource.getRepository(Links);
 

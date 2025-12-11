@@ -1,4 +1,4 @@
-import * as LinktreeRepository from "../repositories/linktree-repository";
+import * as LinktreeRepository from "../repositories/linktree-repository.js";
 
 export const getLinktreesByUserId = async (userId: number) => {
   return LinktreeRepository.getLinktreesByUserId(userId);

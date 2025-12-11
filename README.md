@@ -9,21 +9,25 @@ This project follows a **microservices architecture** with the following compone
 ### Services
 
 1. **Gateway Service** (Port 3000)
+
    - API Gateway that routes requests to appropriate services
    - Handles authentication middleware
    - Proxies requests to backend services
 
 2. **Authentication Service** (Port 3001)
+
    - User registration and login
    - JWT token generation
    - Password hashing with bcrypt
 
 3. **Linktrees Management Service** (Port 3002)
+
    - CRUD operations for linktrees
    - CRUD operations for links
    - Database operations using TypeORM
 
 4. **Linktrees Public Service** (Port 3003)
+
    - Public-facing API for viewing linktrees
    - Redis caching for performance
    - Fetches data from management service
@@ -37,6 +41,7 @@ This project follows a **microservices architecture** with the following compone
 ## 🛠️ Tech Stack
 
 ### Backend
+
 - **Node.js** with **Express**
 - **TypeScript**
 - **TypeORM** (PostgreSQL)
@@ -46,6 +51,7 @@ This project follows a **microservices architecture** with the following compone
 - **http-proxy-middleware** for API gateway
 
 ### Frontend
+
 - **React 19**
 - **TypeScript**
 - **Vite**
@@ -63,12 +69,12 @@ Before running the project, make sure you have:
 - **Redis** server
 - **npm** or **yarn**
 
-## 🚀 Getting Started
+## 🚀 Getting Started (Local)
 
 ### 1. Clone the Repository
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/nbhran3/linktree.git
 cd linktree
 ```
 
@@ -107,6 +113,7 @@ npm install
 Create `.env` files in each service directory:
 
 #### `authentication/.env`
+
 ```env
 PORT=3001
 DB_HOST=localhost
@@ -118,6 +125,7 @@ JWT_SECRET=your-secret-key
 ```
 
 #### `linktree-gateway/.env`
+
 ```env
 PORT=3000
 AUTH_SERVICE_URL=http://localhost:3001
@@ -127,6 +135,7 @@ JWT_SECRET=your-secret-key
 ```
 
 #### `linktrees-management/.env`
+
 ```env
 PORT=3002
 DB_HOST=localhost
@@ -137,6 +146,7 @@ DB_NAME=your_database
 ```
 
 #### `linktrees-public/.env`
+
 ```env
 PORT=3003
 LINKTREES_MANAGEMENT_SERVICE_URL=http://localhost:3002
@@ -163,30 +173,35 @@ redis-server
 Open multiple terminal windows and run each service:
 
 **Terminal 1 - Authentication Service:**
+
 ```bash
 cd authentication
 npm run dev
 ```
 
 **Terminal 2 - Gateway Service:**
+
 ```bash
 cd linktree-gateway
 npm run dev
 ```
 
 **Terminal 3 - Management Service:**
+
 ```bash
 cd linktrees-management
 npm run dev
 ```
 
 **Terminal 4 - Public Service:**
+
 ```bash
 cd linktrees-public
 npm run dev
 ```
 
 **Terminal 5 - Frontend Client:**
+
 ```bash
 cd linktree-client
 npm run dev
@@ -243,10 +258,12 @@ linktree/
 ## 🔑 API Endpoints
 
 ### Authentication (via Gateway: `/auth`)
+
 - `POST /auth/register` - Register a new user
 - `POST /auth/login` - Login user
 
 ### Linktrees (via Gateway: `/linktrees`)
+
 - `GET /linktrees` - Get user's linktrees (requires auth)
 - `POST /linktrees` - Create a new linktree (requires auth)
 - `GET /linktrees/:id` - Get linktree by ID (requires auth)
@@ -256,11 +273,13 @@ linktree/
 - `DELETE /linktrees/:id/links/:linkId` - Delete a link (requires auth)
 
 ### Public (via Gateway: `/public`)
+
 - `GET /public/linktrees/:suffix` - Get public linktree by suffix (no auth required)
 
 ## 🎨 Features
 
 ### User Features
+
 - ✅ User registration and login
 - ✅ Create multiple linktrees
 - ✅ Add, edit, and delete links
@@ -269,6 +288,7 @@ linktree/
 - ✅ Real-time cache updates
 
 ### Technical Features
+
 - ✅ Microservices architecture
 - ✅ JWT authentication
 - ✅ Redis caching with TTL
@@ -304,6 +324,7 @@ linktree/
 ### Running in Development Mode
 
 All services support hot-reload in development:
+
 - Use `npm run dev` for all services
 - Frontend uses Vite HMR (Hot Module Replacement)
 
@@ -317,10 +338,55 @@ cd ../linktrees-public && npm run build
 cd ../linktree-client && npm run build
 ```
 
+## 🚀 Quickstart (Docker)
+
+1. Start Postgres and Redis (example):
+
+```bash
+docker run -d --name pg --network linktree-net \
+  -e POSTGRES_USER=linktree_user \
+  -e POSTGRES_PASSWORD=linktree_password \
+  -e POSTGRES_DB=linktree_db \
+  -p 5432:5432 postgres:15-alpine
+
+docker run -d --name redis --network linktree-net -p 6379:6379 redis:7-alpine
+```
+
+2. Run migrations (so required tables exist):
+
+- Authentication:
+
+```bash
+cd authentication
+npm run migration:run
+```
+
+- Management:
+
+```bash
+cd ../linktrees-management
+npm run migration:run
+```
+
+3. Start the services (example commands; adjust envs as needed):
+
+- Gateway: `docker run -d --name gateway --network linktree-net -p 3000:3000 linktree-gateway`
+- Auth: `docker run -d --name auth --network linktree-net -p 3001:3001 linktree-authentication`
+- Management: `docker run -d --name management --network linktree-net -p 3002:3002 linktrees-management`
+- Public: `docker run -d --name public --network linktree-net -p 3003:3003 linktrees-public`
+- Client: `docker run -d --name client --network linktree-net -p 5173:5173 linktree-client`
+
+4. Access:
+
+- Frontend: http://localhost:5173
+- Gateway: http://localhost:3000
+- Public linktree (API): http://localhost:3000/public/linktrees/{suffix}
+- Public linktree (frontend): http://localhost:5173/linktree/{suffix}
+
 ## 📝 Notes
 
 - Make sure all services are running before testing
-- Database migrations are handled automatically by TypeORM
+- Run migrations so the database has the required tables (auth: `users`; management: `linktrees`, `links`)
 - Redis must be running for the public service to work
 - The gateway service must be running for frontend API calls
 
@@ -334,4 +400,3 @@ cd ../linktree-client && npm run build
 ## 📄 License
 
 ISC
-

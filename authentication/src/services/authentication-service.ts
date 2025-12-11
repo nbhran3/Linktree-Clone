@@ -1,4 +1,4 @@
-import * as UserRepository from '../repositories/user-repository.js';
+import * as UserRepository from '../repositories/user-repository';
 
 export const getUserByEmail = (email: string) => {
     return UserRepository.getUserByEmail(email);

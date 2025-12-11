@@ -1,5 +1,5 @@
-import AppDataSource from "../data-source";
-import { Linktree } from "../entity/linktree";
+import AppDataSource from "../data-source.js";
+import { Linktree } from "../entity/linktree.js";
 
 const linktreeRepository = AppDataSource.getRepository(Linktree);
 
