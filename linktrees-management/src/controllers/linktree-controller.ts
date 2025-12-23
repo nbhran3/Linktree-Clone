@@ -10,7 +10,7 @@ import {
   createLinktreeSchema,
   linktreeIdSchema,
   suffixSchema,
-} from "../validators/Linktree-Schema.js";
+} from "../validators/linktree-schema.js";
 
 // Get all linktrees for the currently authenticated user.
 // The API gateway is expected to put the user id in the "x-user-id" header.
@@ -38,7 +38,9 @@ export const createLinktree = async (req: Request, res: Response) => {
   const result = createLinktreeSchema.safeParse(req.body);
 
   if (!result.success) {
-    const errorMessages = result.error.issues.map((issue) => issue.message);
+    const errorMessages = result.error.issues.map(
+      (issue: unknown) => (issue as any).message
+    );
     return res.status(400).json({ message: errorMessages.join(", ") });
   }
 
@@ -81,7 +83,9 @@ export const getLinktreeByIdAndUserId = async (req: Request, res: Response) => {
   // Validate and coerce :linktreeId path param to a positive integer
   const result = linktreeIdSchema.safeParse(req.params.linktreeId);
   if (!result.success) {
-    const errorMessages = result.error.issues.map((issue) => issue.message);
+    const errorMessages = result.error.issues.map(
+      (issue: unknown) => (issue as any).message
+    );
     return res.status(400).json({ message: errorMessages.join(", ") });
   }
   try {
@@ -116,7 +120,9 @@ export const deleteLinktree = async (req: Request, res: Response) => {
   // Validate :linktreeId path param
   const result = linktreeIdSchema.safeParse(req.params.linktreeId);
   if (!result.success) {
-    const errorMessages = result.error.issues.map((issue) => issue.message);
+    const errorMessages = result.error.issues.map(
+      (issue: unknown) => (issue as any).message
+    );
     return res.status(400).json({ message: errorMessages.join(", ") });
   }
   try {
@@ -144,7 +150,9 @@ export const getLinktreeBySuffix = async (req: Request, res: Response) => {
   // Validate :suffix path param
   const result = suffixSchema.safeParse(req.params.suffix);
   if (!result.success) {
-    const errorMessages = result.error.issues.map((issue) => issue.message);
+    const errorMessages = result.error.issues.map(
+      (issue: unknown) => (issue as any).message
+    );
     return res.status(400).json({ message: errorMessages.join(", ") });
   }
   try {

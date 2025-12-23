@@ -5,14 +5,16 @@ import * as LinksService from "../services/links-service.js";
 import * as LinktreeService from "../services/linktree-service.js";
 import { Request, Response } from "express";
 import { linkSchema, linkIdSchema } from "../validators/links-schema";
-import { linktreeIdSchema } from "../validators/Linktree-Schema.js";
+import { linktreeIdSchema } from "../validators/linktree-schema.js";
 
 // Create a new link for a specific linktree
 export const createLink = async (req: Request, res: Response) => {
   // Validate linkText + linkUrl in body
   const bodyResult = linkSchema.safeParse(req.body);
   if (!bodyResult.success) {
-    const errorMessages = bodyResult.error.issues.map((issue) => issue.message);
+    const errorMessages = bodyResult.error.issues.map(
+      (issue: unknown) => (issue as any).message
+    );
     return res.status(400).json({ message: errorMessages.join(", ") });
   }
 
@@ -20,7 +22,7 @@ export const createLink = async (req: Request, res: Response) => {
   const linktreeIdResult = linktreeIdSchema.safeParse(req.params.linktreeId);
   if (!linktreeIdResult.success) {
     const errorMessages = linktreeIdResult.error.issues.map(
-      (issue) => issue.message
+      (issue: unknown) => (issue as any).message
     );
     return res.status(400).json({ message: errorMessages.join(", ") });
   }
@@ -56,7 +58,7 @@ export const deleteLink = async (req: Request, res: Response) => {
   const linktreeIdResult = linktreeIdSchema.safeParse(req.params.linktreeId);
   if (!linktreeIdResult.success) {
     const errorMessages = linktreeIdResult.error.issues.map(
-      (issue) => issue.message
+      (issue: unknown) => (issue as any).message
     );
     return res.status(400).json({ message: errorMessages.join(", ") });
   }
@@ -65,7 +67,7 @@ export const deleteLink = async (req: Request, res: Response) => {
   const linkIdResult = linkIdSchema.safeParse(req.params.linkId);
   if (!linkIdResult.success) {
     const errorMessages = linkIdResult.error.issues.map(
-      (issue) => issue.message
+      (issue: unknown) => (issue as any).message
     );
     return res.status(400).json({ message: errorMessages.join(", ") });
   }
@@ -102,14 +104,16 @@ export const updateLink = async (req: Request, res: Response) => {
   // Validate new linkText + linkUrl in body
   const bodyResult = linkSchema.safeParse(req.body);
   if (!bodyResult.success) {
-    const errorMessages = bodyResult.error.issues.map((issue) => issue.message);
+    const errorMessages = bodyResult.error.issues.map(
+      (issue: unknown) => (issue as any).message
+    );
     return res.status(400).json({ message: errorMessages.join(", ") });
   }
   // Validate :linktreeId path param
   const linktreeIdResult = linktreeIdSchema.safeParse(req.params.linktreeId);
   if (!linktreeIdResult.success) {
     const errorMessages = linktreeIdResult.error.issues.map(
-      (issue) => issue.message
+      (issue: unknown) => (issue as any).message
     );
     return res.status(400).json({ message: errorMessages.join(", ") });
   }
@@ -118,7 +122,7 @@ export const updateLink = async (req: Request, res: Response) => {
   const linkIdResult = linkIdSchema.safeParse(req.params.linkId);
   if (!linkIdResult.success) {
     const errorMessages = linkIdResult.error.issues.map(
-      (issue) => issue.message
+      (issue: unknown) => (issue as any).message
     );
     return res.status(400).json({ message: errorMessages.join(", ") });
   }
