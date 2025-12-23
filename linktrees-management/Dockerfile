@@ -22,5 +22,6 @@ ENV PORT=3002
 # this line is used to expose the port to the outside world
 EXPOSE $PORT
 
-# this line is used to start the project by running the start script
-CMD ["npm", "run", "dev"]
+# this line is used to start the project in production.
+# We use the "start" script, which first runs migrations and then starts the server.
+CMD ["npm", "start"]
