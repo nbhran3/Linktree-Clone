@@ -31,7 +31,7 @@ export const getLinktreeBySuffix = async (suffix: string) => {
     }
 
     // 3. Cache result for a configurable TTL
-    const cacheTTL = Number(process.env.REDIS_CACHE_TTL) || 7200; // Default: 2 hours
+    const cacheTTL = Number(process.env.REDIS_CACHE_TTL) || 60; // Default: 60 seconds
     await saveLinktreeToCache(suffix, cacheTTL, response.data);
 
     return response.data;
