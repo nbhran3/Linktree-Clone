@@ -9,6 +9,7 @@ import { registerSchema } from "../validators/auth-schema";
 
 function Register() {
   const navigate = useNavigate();
+  const API_URL = import.meta.env.VITE_API_URL;
   // Local state for the registration form
   const [registerInfo, setRegisterInfo] = useState({ email: "", password: "" });
   const [message, setMessage] = useState<{
@@ -16,7 +17,9 @@ function Register() {
     type: "success" | "error";
   } | null>(null);
   // Field-level Zod errors
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
+    {}
+  );
 
   // Update email and clear its error when the user types
   function handleEmailChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -64,7 +67,7 @@ function Register() {
     setErrors({});
 
     try {
-      const respond = await axios.post("http://localhost:3000/auth/register", {
+      const respond = await axios.post(`${API_URL}/auth/register`, {
         email: result.data.email,
         password: result.data.password,
       });

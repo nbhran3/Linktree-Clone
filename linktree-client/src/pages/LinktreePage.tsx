@@ -53,16 +53,18 @@ function LinktreePage() {
   if (!userInfo) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-gray-500 text-lg">Please log in to view this page.</div>
+        <div className="text-gray-500 text-lg">
+          Please log in to view this page.
+        </div>
       </div>
     );
   }
 
-  const apiUrl = "http://localhost:3000/linktrees";
+  const API_URL = import.meta.env.VITE_API_URL;
 
   // Axios instance with JWT in Authorization header
   const authAxios = axios.create({
-    baseURL: apiUrl,
+    baseURL: `${API_URL}/linktrees`,
     headers: {
       Authorization: `Bearer ${userInfo.token}`,
     },
@@ -89,7 +91,8 @@ function LinktreePage() {
       linkUrl: newValue,
       linkText: prevValue.linkText,
     }));
-    if (linkErrors.linkUrl) setLinkErrors((prev) => ({ ...prev, linkUrl: undefined }));
+    if (linkErrors.linkUrl)
+      setLinkErrors((prev) => ({ ...prev, linkUrl: undefined }));
   }
 
   // Handle typing into "link text" field in the add-link modal
@@ -99,7 +102,8 @@ function LinktreePage() {
       linkUrl: prevValue.linkUrl,
       linkText: newValue,
     }));
-    if (linkErrors.linkText) setLinkErrors((prev) => ({ ...prev, linkText: undefined }));
+    if (linkErrors.linkText)
+      setLinkErrors((prev) => ({ ...prev, linkText: undefined }));
   }
 
   // Validate and submit the "add new link" form
@@ -109,7 +113,7 @@ function LinktreePage() {
       linkText: newLink.linkText,
       linkUrl: newLink.linkUrl,
     });
-    
+
     if (!result.success) {
       // Extract field-specific errors
       const fieldErrors: { linkText?: string; linkUrl?: string } = {};
@@ -120,7 +124,7 @@ function LinktreePage() {
         }
       });
       setLinkErrors(fieldErrors);
-      
+
       // Show general error message
       const errorMessage = result.error.issues
         .map((issue) => issue.message)
@@ -149,7 +153,8 @@ function LinktreePage() {
       });
     } catch (error: any) {
       const errorMessage =
-        error.response?.data?.message || "Failed to add link. Please try again.";
+        error.response?.data?.message ||
+        "Failed to add link. Please try again.";
       setMessage({ text: errorMessage, type: "error" });
     }
   }
@@ -178,7 +183,7 @@ function LinktreePage() {
   ) {
     // ✅ Validate BEFORE making API call
     const result = linkSchema.safeParse(linkData);
-    
+
     if (!result.success) {
       const errorMessage = result.error.issues
         .map((issue) => issue.message)

@@ -19,6 +19,7 @@ type PublicLinktreeData = {
 
 function PublicLinktree() {
   const { suffix } = useParams<{ suffix: string }>();
+  const API_URL = import.meta.env.VITE_API_URL;
   const [linktree, setLinktree] = useState<PublicLinktreeData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +36,7 @@ function PublicLinktree() {
         setLoading(true);
         setError(null);
         const response = await axios.get(
-          `http://localhost:3000/public/linktrees/${suffix}`
+          `${API_URL}/public/linktrees/${suffix}`
         );
         setLinktree(response.data);
       } catch (err: any) {

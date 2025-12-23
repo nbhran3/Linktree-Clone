@@ -21,10 +21,13 @@ function Login() {
     type: "success" | "error";
   } | null>(null);
   // Field-level validation errors populated from Zod
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
+    {}
+  );
 
   // Get setter from AuthContext to persist user info globally
   const { setUserInfo } = useContext(AuthContext);
+  const API_URL = import.meta.env.VITE_API_URL;
 
   // Update email field and clear its error when user types
   function handleEmailChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -71,7 +74,7 @@ function Login() {
     setErrors({});
 
     try {
-      const respond = await axios.post("http://localhost:3000/auth/login", {
+      const respond = await axios.post(`${API_URL}/auth/login`, {
         email: result.data.email,
         password: result.data.password,
       });

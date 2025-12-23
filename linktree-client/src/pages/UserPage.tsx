@@ -39,11 +39,11 @@ function UserPage() {
     return <Navigate to="/login" />;
   }
 
-  const apiUrl = "http://localhost:3000";
+  const API_URL = import.meta.env.VITE_API_URL;
 
   // Axios instance that includes the JWT in Authorization header
   const authAxios = axios.create({
-    baseURL: apiUrl,
+    baseURL: API_URL,
     headers: {
       Authorization: `Bearer ${userInfo.token}`,
     },
@@ -69,10 +69,10 @@ function UserPage() {
   // Validate and submit the "create linktree" form
   async function handleSubmitNewLinktree() {
     // ✅ Validate BEFORE making API call
-    const result = createLinktreeSchema.safeParse({ 
-      linktreeSuffix: newLinktree 
+    const result = createLinktreeSchema.safeParse({
+      linktreeSuffix: newLinktree,
     });
-    
+
     if (!result.success) {
       const errorMessage = result.error.issues
         .map((issue) => issue.message)
@@ -203,8 +203,8 @@ function UserPage() {
                       </span>
                       <input
                         className={`flex-1 px-3 py-2 border rounded-r-lg focus:outline-none focus:ring-2 focus:border-transparent ${
-                          linktreeError 
-                            ? "border-red-500 focus:ring-red-500" 
+                          linktreeError
+                            ? "border-red-500 focus:ring-red-500"
                             : "border-gray-300 focus:ring-teal-500"
                         }`}
                         placeholder="your-unique-name"
@@ -213,7 +213,9 @@ function UserPage() {
                       />
                     </div>
                     {linktreeError && (
-                      <p className="text-red-500 text-sm mt-1">{linktreeError}</p>
+                      <p className="text-red-500 text-sm mt-1">
+                        {linktreeError}
+                      </p>
                     )}
                   </label>
                   <div className="flex gap-3 justify-end">
