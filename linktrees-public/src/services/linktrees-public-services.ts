@@ -16,6 +16,7 @@ export const getLinktreeBySuffix = async (suffix: string) => {
     // 1. Check Redis cache first
     const cached = await getCachedLinktree(suffix);
     if (cached) {
+      console.log(cached);
       return cached;
     }
 

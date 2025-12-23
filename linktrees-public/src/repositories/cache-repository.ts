@@ -21,7 +21,6 @@ export async function getCachedLinktree(suffix: string) {
   if (cachedLinktree) {
     return JSON.parse(cachedLinktree);
   }
-
   return null;
 }
 
