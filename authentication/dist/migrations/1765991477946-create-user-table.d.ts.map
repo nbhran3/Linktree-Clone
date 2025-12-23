@@ -1,0 +1,1 @@
+{"version":3,"file":"1765991477946-create-user-table.d.ts","sourceRoot":"","sources":["../../src/migrations/1765991477946-create-user-table.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,WAAW,EAAsB,MAAM,SAAS,CAAC;AAE9E,qBAAa,4BAA6B,YAAW,kBAAkB;IACxD,EAAE,CAAC,WAAW,EAAE,WAAW,GAAG,OAAO,CAAC,IAAI,CAAC;IA+B3C,IAAI,CAAC,WAAW,EAAE,WAAW,GAAG,OAAO,CAAC,IAAI,CAAC;CAG3D"}
