@@ -1,3 +1,6 @@
+// Reusable message banner used to show success/error notifications.
+// Automatically disappears after a short delay with a fade-out animation.
+
 import { useEffect, useState } from "react";
 
 type MessageProps = {
@@ -8,11 +11,15 @@ type MessageProps = {
 
 function Message({ message, type, onClose }: MessageProps) {
   const [isFadingOut, setIsFadingOut] = useState(false);
-  const bgColor = type === "success" ? "bg-green-50 border-green-500" : "bg-red-50 border-red-500";
+
+  // Tailwind classes depending on message type
+  const bgColor =
+    type === "success" ? "bg-green-50 border-green-500" : "bg-red-50 border-red-500";
   const textColor = type === "success" ? "text-green-800" : "text-red-800";
   const iconColor = type === "success" ? "text-green-500" : "text-red-500";
 
   useEffect(() => {
+    // Show message, then start fade-out, then call onClose to remove it
     const timer = setTimeout(() => {
       setIsFadingOut(true);
       setTimeout(() => {

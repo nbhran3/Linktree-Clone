@@ -1,8 +1,13 @@
+// Repository layer for Linktree entity.
+// Only this file talks directly to TypeORM for linktree-related operations.
+
 import AppDataSource from "../data-source.js";
 import { Linktree } from "../entity/linktree.js";
 
+// Get the TypeORM repository for Linktree
 const linktreeRepository = AppDataSource.getRepository(Linktree);
 
+// Get all linktrees that belong to a specific user
 export const getLinktreesByUserId = async (userId: number) => {
   const linktrees = await linktreeRepository.find({
     where: { user_id: userId },
@@ -11,10 +16,8 @@ export const getLinktreesByUserId = async (userId: number) => {
   return linktrees;
 };
 
-export const createLinktree = async (
-  userId: number,
-  linktreeSuffix: string
-) => {
+// Create and save a new linktree
+export const createLinktree = async (userId: number, linktreeSuffix: string) => {
   const newLinktree = linktreeRepository.create({
     user_id: userId,
     linktree_suffix: linktreeSuffix,
@@ -23,6 +26,7 @@ export const createLinktree = async (
   return newLinktree;
 };
 
+// Find a linktree by its public suffix
 export const getLinktreeBySuffix = async (suffix: string) => {
   const linktree = await linktreeRepository.findOne({
     where: { linktree_suffix: suffix },
@@ -30,6 +34,7 @@ export const getLinktreeBySuffix = async (suffix: string) => {
   return linktree;
 };
 
+// Find a specific linktree by id, but only if it belongs to a given user
 export const getLinktreeByIdAndUserId = async (
   linktreeId: number,
   userId: number
@@ -41,13 +46,16 @@ export const getLinktreeByIdAndUserId = async (
   return linktree;
 };
 
+// Delete a linktree if it belongs to the user; return null if not found
 export const deleteLinktree = async (linktreeId: number, userId: number) => {
   const deletedLinktree = await linktreeRepository.findOne({
     where: { id: linktreeId, user_id: userId },
   });
+
   if (!deletedLinktree) {
     return null;
   }
+
   await linktreeRepository.delete({ id: linktreeId, user_id: userId });
   return { message: "Linktree deleted successfully" };
 };

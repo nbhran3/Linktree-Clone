@@ -1,3 +1,5 @@
+// Simple 404 page used as a catch-all route when no other page matches.
+
 import { Link } from "react-router-dom";
 
 const NotFound = () => {

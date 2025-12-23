@@ -1,13 +1,20 @@
+// TypeORM entity representing the "users" table in the authentication database.
+// Each instance of this class maps to a row in the "users" table.
+
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity({name: "users"})
+// Map this class to the "users" table
+@Entity({ name: "users" })
 export class User {
-    @PrimaryGeneratedColumn()
-    id!: number
+  // Auto-incrementing primary key (id SERIAL / BIGSERIAL)
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-    @Column({ type: "varchar" })
-    email!: string
+  // User email (unique in practice, enforced at the business logic level)
+  @Column({ type: "varchar" })
+  email!: string;
 
-    @Column({ type: "varchar" })
-    password_hash!: string
+  // Hashed password (never store the plain text password)
+  @Column({ type: "varchar" })
+  password_hash!: string;
 }

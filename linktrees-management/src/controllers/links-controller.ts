@@ -1,17 +1,36 @@
+// Controller for managing individual links inside a linktree.
+// All routes here expect the gateway to set "x-user-id" after auth.
+
 import * as LinksService from "../services/links-service.js";
 import * as LinktreeService from "../services/linktree-service.js";
 import { Request, Response } from "express";
+import { linkSchema, linkIdSchema } from "../validators/links-schema";
+import { linktreeIdSchema } from "../validators/Linktree-Schema.js";
 
+// Create a new link for a specific linktree
 export const createLink = async (req: Request, res: Response) => {
+  // Validate linkText + linkUrl in body
+  const bodyResult = linkSchema.safeParse(req.body);
+  if (!bodyResult.success) {
+    const errorMessages = bodyResult.error.issues.map((issue) => issue.message);
+    return res.status(400).json({ message: errorMessages.join(", ") });
+  }
+
+  // Validate :linktreeId path param
+  const linktreeIdResult = linktreeIdSchema.safeParse(req.params.linktreeId);
+  if (!linktreeIdResult.success) {
+    const errorMessages = linktreeIdResult.error.issues.map(
+      (issue) => issue.message
+    );
+    return res.status(400).json({ message: errorMessages.join(", ") });
+  }
+
   try {
     const userId = Number(req.headers["x-user-id"]);
-    const linktreeId = Number(req.params.linktreeId);
-    const linksData: { linkText: string; linkUrl: string } = req.body;
+    const linktreeId = linktreeIdResult.data;
+    const linksData: { linkText: string; linkUrl: string } = bodyResult.data;
 
-    console.log("userId:", userId, "linktreeId:", linktreeId);
-
-    console.log("Creating link with data:", linksData);
-
+    // Ensure the linktree belongs to this user before inserting links
     const linktree = await LinktreeService.getLinktreeByIdAndUserId(
       linktreeId,
       userId
@@ -22,24 +41,41 @@ export const createLink = async (req: Request, res: Response) => {
 
     const updatedLinks = await LinksService.createLink(linktreeId, linksData);
     return res.status(201).json({
-      // Return the updated list of links after insertion
       message: "Link added successfully",
       links: updatedLinks,
     });
   } catch (error) {
-    console.error("Error creating link:", error); // ✅ Add this - it's missing!
+    console.error("Error creating link:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
+// Delete a single link from a linktree
 export const deleteLink = async (req: Request, res: Response) => {
+  // Validate :linktreeId path param
+  const linktreeIdResult = linktreeIdSchema.safeParse(req.params.linktreeId);
+  if (!linktreeIdResult.success) {
+    const errorMessages = linktreeIdResult.error.issues.map(
+      (issue) => issue.message
+    );
+    return res.status(400).json({ message: errorMessages.join(", ") });
+  }
+
+  // Validate :linkId path param
+  const linkIdResult = linkIdSchema.safeParse(req.params.linkId);
+  if (!linkIdResult.success) {
+    const errorMessages = linkIdResult.error.issues.map(
+      (issue) => issue.message
+    );
+    return res.status(400).json({ message: errorMessages.join(", ") });
+  }
   try {
     const userId = Number(req.headers["x-user-id"]);
 
-    const linktreeId = Number(req.params.linktreeId);
-    const linkId = Number(req.params.linkId);
-    console.log("User ID:", userId);
+    const linktreeId = linktreeIdResult.data;
+    const linkId = linkIdResult.data;
 
+    // Make sure the user owns this linktree before deleting links
     const linktree = await LinktreeService.getLinktreeByIdAndUserId(
       linktreeId,
       userId
@@ -61,13 +97,39 @@ export const deleteLink = async (req: Request, res: Response) => {
   }
 };
 
+// Update an existing link inside a linktree
 export const updateLink = async (req: Request, res: Response) => {
+  // Validate new linkText + linkUrl in body
+  const bodyResult = linkSchema.safeParse(req.body);
+  if (!bodyResult.success) {
+    const errorMessages = bodyResult.error.issues.map((issue) => issue.message);
+    return res.status(400).json({ message: errorMessages.join(", ") });
+  }
+  // Validate :linktreeId path param
+  const linktreeIdResult = linktreeIdSchema.safeParse(req.params.linktreeId);
+  if (!linktreeIdResult.success) {
+    const errorMessages = linktreeIdResult.error.issues.map(
+      (issue) => issue.message
+    );
+    return res.status(400).json({ message: errorMessages.join(", ") });
+  }
+
+  // Validate :linkId path param
+  const linkIdResult = linkIdSchema.safeParse(req.params.linkId);
+  if (!linkIdResult.success) {
+    const errorMessages = linkIdResult.error.issues.map(
+      (issue) => issue.message
+    );
+    return res.status(400).json({ message: errorMessages.join(", ") });
+  }
+
   try {
     const userId = Number(req.headers["x-user-id"]);
-    const linktreeId = Number(req.params.linktreeId);
-    const linkId = Number(req.params.linkId);
-    const { linkText, linkUrl } = req.body;
+    const linktreeId = linktreeIdResult.data;
+    const linkId = linkIdResult.data;
+    const { linkText, linkUrl } = bodyResult.data;
 
+    // Ensure the user owns this linktree before updating links
     const linktree = await LinktreeService.getLinktreeByIdAndUserId(
       linktreeId,
       userId

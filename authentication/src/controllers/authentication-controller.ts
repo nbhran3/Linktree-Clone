@@ -1,38 +1,49 @@
 // Controllers -> Flow manager (They check body params) and they use services
 // Services -> The services use repositories to perform business logic
 // Repositories -> Data access layer (DAL) -> Database queries
+// This controller handles the HTTP layer for the authentication service.
 
 import * as AuthenticationService from "../services/authentication-service";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Request, Response } from "express";
-import validator from "validator";
+import { registerSchema, loginSchema } from "../validators/auth-schema";
 
+// Number of salt rounds for bcrypt password hashing
 const SALT_ROUNDS = 10;
+
+// Secret key used to sign JWTs. In production this MUST come from an environment variable.
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
+// Handle user registration
+// 1. Validate body with Zod
+// 2. Check if user already exists
+// 3. Hash password and save new user through the service layer
 export const registerUser = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  // Validate the request body against the register schema
+  const result = registerSchema.safeParse(req.body);
+  if (!result.success) {
+    const errorMessages = result.error.issues.map((issue) => issue.message);
+    return res.status(400).json({ error: errorMessages.join(",") });
+  }
 
-  if (!email || !password) {
-    return res.status(400).json({ error: "Email and password are required" });
-  }
-  if (!validator.isEmail(email)) {
-    return res.status(400).json({ error: "Invalid email" });
-  }
+  // Safe to use because Zod validated the shape
+  const { email, password } = result.data;
 
   try {
+    // Check if a user with this email already exists
     const existingUser = await AuthenticationService.getUserByEmail(email);
 
     if (existingUser) {
       return res.status(400).json({ error: "User already exists" });
     }
 
-    // Hash password
+    // Hash the plain-text password before saving
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+
+    // Delegate user creation to the service layer
     await AuthenticationService.createUser(email, hashedPassword);
 
-    // Return user without password
     return res.status(201).json({
       message: "User registered successfully",
     });
@@ -42,40 +53,48 @@ export const registerUser = async (req: Request, res: Response) => {
   }
 };
 
+// Handle user login
+// 1. Validate body with Zod
+// 2. Find user by email
+// 3. Compare passwords
+// 4. Issue JWT token if credentials are valid
 export const loginUser = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  // Validate the request body against the login schema
+  const result = loginSchema.safeParse(req.body);
 
-  if (!email || !password) {
-    return res.status(400).json({ error: "Email and password are required" });
+  if (!result.success) {
+    const errorMessages = result.error.issues.map((issue) => issue.message);
+    return res.status(400).json({ error: errorMessages.join(",") });
   }
 
+  // Safe to use because Zod validated the shape
+  const { email, password } = result.data;
+
   try {
-    // TypeORM: Find user by email (replaces: SELECT * FROM users WHERE email = $1)
+    // Look up the user by email through the service layer
     const user = await AuthenticationService.getUserByEmail(email);
 
     if (!user) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // Verify password
+    // Compare the plain-text password with the stored hash
     const isValidPassword = await bcrypt.compare(password, user.password_hash);
 
     if (!isValidPassword) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // Generate JWT token
-    else {
-      const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
-        expiresIn: "24h",
-      });
+    // Create a signed JWT containing the user id and email
+    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
+      expiresIn: "24h", // token validity
+    });
 
-      return res.json({
-        message: "Login successful",
-        token: token,
-        user: { id: user.id, email: user.email },
-      });
-    }
+    return res.json({
+      message: "Login successful",
+      token: token,
+      user: { id: user.id, email: user.email },
+    });
   } catch (error) {
     console.error("Error logging in:", error);
     return res.status(500).json({ error: "Internal server error" });

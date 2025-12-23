@@ -1,3 +1,6 @@
+// Marketing-style landing page shown at /homepage.
+// Encourages users to register or log in and explains the core features.
+
 import { Link } from "react-router-dom";
 
 function HomePage() {
@@ -59,7 +62,7 @@ function HomePage() {
           </div>
 
           <div className="max-w-5xl mx-auto px-6 pb-16">
-            <div className="grid gap-6 md:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-2 max-w-2xl mx-auto">
               <div className="border border-gray-200 rounded-lg p-5 bg-white/90 backdrop-blur shadow-sm">
                 <h3 className="text-lg font-semibold text-gray-800 mb-2">
                   Manage Links
@@ -76,14 +79,6 @@ function HomePage() {
                 <p className="text-gray-600">
                   Share your public linktree URL so anyone can access your
                   links.
-                </p>
-              </div>
-              <div className="border border-gray-200 rounded-lg p-5 bg-white/90 backdrop-blur shadow-sm">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                  Fast & Secure
-                </h3>
-                <p className="text-gray-600">
-                  JWT authentication, caching, and a modern React frontend.
                 </p>
               </div>
             </div>

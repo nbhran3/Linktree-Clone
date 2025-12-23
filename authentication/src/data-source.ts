@@ -1,26 +1,33 @@
+// TypeORM DataSource configuration for the Authentication service.
+// This is responsible for connecting to PostgreSQL and knowing where entities and migrations live.
+
 import dotenv from "dotenv";
 import { DataSource } from "typeorm";
 import path from "path";
 
 // In CommonJS, __dirname is available directly (no need for import.meta.url)
 
-// Load .env from the parent directory (authentication folder)
+// Load environment variables from the .env file in the authentication folder
 dotenv.config({ path: path.join(__dirname, "..", ".env") });
 
-const entitiesPath = path.join(__dirname, "entity", "*.{js,ts}"); // joins the directory name with the entity files
-const migrationsPath = path.join(__dirname, "migrations", "*.{js,ts}"); // joins the directory name with the migration files
+// Path pattern for entity files (User entity, etc.)
+const entitiesPath = path.join(__dirname, "entity", "*.{js,ts}");
 
+// Path pattern for migration files
+const migrationsPath = path.join(__dirname, "migrations", "*.{js,ts}");
+
+// Create the DataSource instance used across the authentication service
 const AppDataSource = new DataSource({
-  type: "postgres", // tells TypeORM to use PostgreSQL
-  host: process.env.DB_HOST as string,
-  port: Number(process.env.PG_PORT) || 5432,
-  username: process.env.DB_USER as string,
-  password: process.env.DB_PASS as string,
-  database: process.env.PG_DB || "linktree_authentication",
-  migrations: [migrationsPath], // points to the migration files
-  synchronize: false, // automatically creates tables from your entities if they don't exist
-  logging: true, // prints every SQL query to the console
-  entities: [entitiesPath], // points to the entity files
+  type: "postgres", // Database engine
+  host: process.env.DB_HOST as string, // DB hostname
+  port: Number(process.env.PG_PORT) || 5432, // DB port
+  username: process.env.DB_USER as string, // DB user
+  password: process.env.DB_PASS as string, // DB password
+  database: process.env.PG_DB || "linktree_authentication", // DB name
+  migrations: [migrationsPath], // Where to find migration files
+  synchronize: false, // We use migrations instead of auto-syncing entities
+  logging: true, // Log all SQL queries (useful in development)
+  entities: [entitiesPath], // Where to find entity classes
 });
 
 export default AppDataSource;

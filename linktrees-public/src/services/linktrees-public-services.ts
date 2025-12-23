@@ -1,33 +1,39 @@
-import redisClient from "../redis-client.js";
+// Service layer for the public linktree service.
+// Handles calling the management service and caching results in Redis.
+
 import dotenv from "dotenv";
 import axios from "axios";
+import {
+  getCachedLinktree,
+  LinktreeResponse,
+  saveLinktreeToCache,
+} from "../repositories/cache-repository.js";
 
 dotenv.config();
 
 export const getLinktreeBySuffix = async (suffix: string) => {
   try {
-    const cachedLinktree = await redisClient.get(`linktree:${suffix}`);
-    if (cachedLinktree) {
-      return JSON.parse(cachedLinktree);
+    // 1. Check Redis cache first
+    const cached = await getCachedLinktree(suffix);
+    if (cached) {
+      return cached;
     }
+
+    // 2. If not in cache, call the management service
     const managementUrl = `${
       process.env.LINKTREES_MANAGEMENT_SERVICE_URL || "http://localhost:3002"
     }/${suffix}/public`;
-    console.log("Calling management service:", managementUrl);
-    const response = await axios.get(managementUrl);
+
+    const response = await axios.get<LinktreeResponse>(managementUrl);
+
     if (response.status !== 200) {
-      console.log("Management service returned non-200 status:", response.status);
       return null;
     }
-    console.log("Management service response:", response.data);
-    // Cache for 2 hours (7200 seconds) - configurable via env
-    const cacheTTL = Number(process.env.REDIS_CACHE_TTL) || 20; // Default: 2 hours
-    await redisClient.setex(
-      `linktree:${suffix}`,
-      cacheTTL,
-      JSON.stringify(response.data)
-    );
-    console.log(`Cached linktree:${suffix} for ${cacheTTL} seconds (${cacheTTL / 3600} hours)`);
+
+    // 3. Cache result for a configurable TTL
+    const cacheTTL = Number(process.env.REDIS_CACHE_TTL) || 7200; // Default: 2 hours
+    await saveLinktreeToCache(suffix, cacheTTL, response.data);
+
     return response.data;
   } catch (error: any) {
     console.error("Error fetching linktree by suffix:", error.message);

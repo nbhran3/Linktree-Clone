@@ -45,6 +45,7 @@ This project follows a **microservices architecture** with the following compone
 - **Node.js** with **Express**
 - **TypeScript**
 - **TypeORM** (PostgreSQL)
+- **Zod** for request validation
 - **JWT** for authentication
 - **Redis** for caching
 - **bcrypt** for password hashing
@@ -58,6 +59,7 @@ This project follows a **microservices architecture** with the following compone
 - **Tailwind CSS**
 - **React Router**
 - **Axios** for API calls
+- **Zod** for client-side form validation
 - **Heroicons** for icons
 
 ## 📋 Prerequisites
@@ -301,9 +303,38 @@ linktree/
 
 1. User registers/logs in → Authentication Service
 2. Service returns JWT token
-3. Frontend stores token in context
-4. Gateway validates token on protected routes
-5. Gateway forwards requests with `x-user-id` header
+3. Frontend stores token and user info in React context **and** `localStorage` (so refresh keeps you logged in)
+4. On page load, AuthContext restores user info from `localStorage`
+5. Gateway validates token on protected routes
+6. Gateway forwards requests with `x-user-id` header
+
+## ✅ Validation with Zod
+
+The project uses **Zod** for both backend and frontend validation:
+
+- **Backend**
+  - `authentication` service:
+    - `registerSchema` and `loginSchema` validate email/password on `register` and `login` routes.
+  - `linktrees-management` service:
+    - `createLinktreeSchema` validates `linktreeSuffix` (length and allowed characters).
+    - `linktreeIdSchema`, `linkIdSchema`, `suffixSchema` validate path params (`:linktreeId`, `:linkId`, `:suffix`).
+    - `linkSchema` validates `linkText` and `linkUrl` for creating/updating links.
+  - `linktrees-public` service:
+    - `suffixSchema` validates the public `:linktreeSuffix` path parameter.
+
+- **Frontend**
+  - `Login` page:
+    - Uses `loginSchema` to validate email and password before calling the `/auth/login` API.
+    - Shows inline error messages under each input.
+  - `Register` page:
+    - Uses `registerSchema` to validate email and password (including minimum length) before `/auth/register`.
+    - Shows inline error messages under each input.
+  - `UserPage` (create linktree):
+    - Uses `createLinktreeSchema` to validate the linktree suffix before sending it to `/linktrees`.
+    - Displays validation errors under the suffix input.
+  - `LinktreePage` (add/edit links):
+    - Uses `linkSchema` to validate `linkText` and `linkUrl` before creating or updating a link.
+    - Shows field-specific errors in the “Add Link” modal and when editing an existing link.
 
 ## 💾 Caching Strategy
 
@@ -318,6 +349,9 @@ linktree/
 - Login/Register logo placed at the top-left for quick navigation
 - Header on HomePage stretches edge-to-edge with links near the screen edges
 - Animated gradient backgrounds on Home, Login, and Register for a unified look
+- Login and Register forms show field-level validation errors using Zod (no generic error banners)
+- Creating a linktree and adding/editing links also use Zod validation with inline error messages
+- Auth state (token + user info) is persisted in `localStorage` so refreshing the page keeps you logged in
 
 ## 🧪 Development
 
