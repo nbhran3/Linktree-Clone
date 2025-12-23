@@ -98,7 +98,7 @@ function Login() {
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
       <div className="absolute top-6 left-6 z-20">
         <Link
-          to="/homepage"
+          to="/"
           className="text-3xl font-extrabold text-gray-800 hover:text-teal-600 transition-colors"
         >
           Linktree

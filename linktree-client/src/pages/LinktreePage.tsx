@@ -253,7 +253,7 @@ function LinktreePage() {
         <header className="border-b border-gray-200 bg-white/80 backdrop-blur">
           <div className="w-full px-6 py-4 flex items-center justify-between">
             <Link
-              to="/homepage"
+              to="/"
               className="text-2xl font-bold text-gray-800 hover:text-teal-600 transition-colors"
             >
               Linktree
